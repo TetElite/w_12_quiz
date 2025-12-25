@@ -1,7 +1,9 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-
+import 'package:uuid/uuid.dart';
 import '../../models/grocery.dart';
 
+const uuid = Uuid();
 class NewItem extends StatefulWidget {
   const NewItem({super.key});
 
@@ -47,6 +49,13 @@ class _NewItemState extends State<NewItem> {
 
   void onAdd() {
     // Will be implemented later - Create and return the new grocery
+    Grocery grocery = Grocery(
+      id: uuid.v4(), 
+      name: _nameController.text, 
+      quantity: int.parse(_quantityController.text), 
+      category: _selectedCategory
+    );
+    Navigator.of(context).pop(grocery);
   }
 
   @override
@@ -74,16 +83,32 @@ class _NewItemState extends State<NewItem> {
                 ),
                 const SizedBox(width: 8),
                 Expanded(
-                  child: DropdownButtonFormField<GroceryCategory>(
-                    initialValue: _selectedCategory,
-                    items: [  ],
-                    onChanged: (value) {
-                      if (value != null) {
-                        setState(() {
-                          _selectedCategory = value;
-                        });
-                      }
+                  child: DropdownButton<GroceryCategory>(
+                    value: _selectedCategory,      
+                    onChanged: (GroceryCategory? value) {
+                      setState(() {
+                        _selectedCategory = value!; 
+                      });
                     },
+                    items: [
+                      for(var item in GroceryCategory.values) 
+                      DropdownMenuItem(
+                        value: item,
+                        child: Row(
+                          children: [
+                            Text(item.label),
+                            SizedBox(width: 10),
+                            Container(
+                              height: 15,
+                              width: 15, 
+                              decoration: BoxDecoration(
+                                color: item.color
+                              ),
+                            )
+                          ],
+                        )
+                      )
+                    ]
                   ),
                 ),
               ],
